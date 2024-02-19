@@ -15,7 +15,7 @@ class LogParser:
     def __init__(self, update_handler):
         self.update_handler = update_handler
         self.completion_state = CompletionState()
-        self.last_publish_progress = datetime.fromtimestamp(0)
+        self.last_publish_progress = datetime.fromtimestamp(0).astimezone()
 
     def parse_line(self, line):
         match = self.line_re.match(line)
@@ -23,7 +23,7 @@ class LogParser:
         if not match:
             return
 
-        ts = datetime.fromisoformat(match['datetime'])
+        ts = datetime.fromisoformat(match['datetime']).astimezone()
         if match['level'] == 'WARN':
             self.completion_state.warnings.append(line)
         elif match['level'] == 'ERROR':

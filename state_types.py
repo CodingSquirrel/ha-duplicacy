@@ -25,6 +25,7 @@ class ProgressState:
     upload_speed: int = field(metadata={
         'device_class': 'data_rate',
         'name': 'Upload Speed',
+        'suggested_display_precision': 2,
         'state_class': 'measurement',
         'unit_of_measurement': 'MB/s',
     })
@@ -63,23 +64,92 @@ class ProgressState:
 
 @dataclass
 class CompletionState:
-    revision: int = 0
-    time_started: datetime = datetime.fromtimestamp(0)
-    time_finished: datetime = datetime.fromtimestamp(0)
-    time_elapsed: timedelta = timedelta()
-    files: int = 0
-    files_size: int = 0
-    new_files: int = 0
-    new_files_size: int = 0
-    chunks: int = 0
-    chunks_size: int = 0
-    new_chunks: int = 0
-    new_chunks_size: int = 0
-    errors: list[str] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
+    revision: int = field(default=0, metadata={
+        'icon': 'mdi:counter',
+        'name': 'Revision',
+        'state_class': 'measurement',
+    })
+    time_started: datetime = field(default=datetime.fromtimestamp(0), metadata={
+        'device_class': 'timestamp',
+        'name': 'Time Started',
+        'state_class': 'measurement',
+    })
+    time_finished: datetime = field(default=datetime.fromtimestamp(0), metadata={
+        'device_class': 'timestamp',
+        'name': 'Time Finished',
+        'state_class': 'measurement',
+    })
+    time_elapsed: timedelta = field(default=timedelta(), metadata={
+        'device_class': 'duration',
+        'name': 'Time Elapsed',
+        'state_class': 'measurement',
+        'unit_of_measurement': 's',
+    })
+    files: int = field(default=0, metadata={
+        'icon': 'mdi:file-cloud',
+        'name': 'Files',
+        'state_class': 'measurement',
+    })
+    files_size: int = field(default=0, metadata={
+        'device_class': 'data_size',
+        'name': 'Files Size',
+        'suggested_display_precision': 2,
+        'state_class': 'measurement',
+        'unit_of_measurement': 'GiB',
+    })
+    new_files: int = field(default=0, metadata={
+        'icon': 'mdi:file-upload',
+        'name': 'New Files',
+        'state_class': 'measurement',
+    })
+    new_files_size: int = field(default=0, metadata={
+        'device_class': 'data_size',
+        'name': 'New Files Size',
+        'suggested_display_precision': 2,
+        'state_class': 'measurement',
+        'unit_of_measurement': 'GiB',
+    })
+    chunks: int = field(default=0, metadata={
+        'icon': 'mdi:database',
+        'name': 'Chunks',
+        'state_class': 'measurement',
+    })
+    chunks_size: int = field(default=0, metadata={
+        'device_class': 'data_size',
+        'name': 'Chunks Size',
+        'suggested_display_precision': 2,
+        'state_class': 'measurement',
+        'unit_of_measurement': 'GiB',
+    })
+    new_chunks: int = field(default=0, metadata={
+        'icon': 'mdi:database-arrow-up',
+        'name': 'New Chunks',
+        'state_class': 'measurement',
+    })
+    new_chunks_size: int = field(default=0, metadata={
+        'device_class': 'data_size',
+        'name': 'New Chunks Size',
+        'suggested_display_precision': 2,
+        'state_class': 'measurement',
+        'unit_of_measurement': 'GiB',
+    })
+    errors: list[str] = field(default_factory=list, metadata={
+        'icon': 'mdi:close-circle',
+        'name': 'Errors',
+    })
+    warnings: list[str] = field(default_factory=list, metadata={
+        'icon': 'mdi:alert',
+        'name': 'Warnings',
+    })
+    state: str = field(default='', metadata={
+        'icon': 'mdi:cloud-check-variant',
+        'name': 'State',
+        'device_class': 'enum',
+        'state_class': 'measurement',
+    })
 
     @property
-    def state(self) -> str:
+    def state_value(self) -> str:
         if self.errors:
             return 'error'
         if self.warnings:
@@ -89,17 +159,17 @@ class CompletionState:
     def as_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
-            'time_started': str(self.time_started),
-            'time_finished': str(self.time_finished),
-            'time_elapsed': str(self.time_elapsed),
-            'state': self.state
+            'time_started': self.time_started.isoformat(),
+            'time_finished': self.time_finished.isoformat(),
+            'time_elapsed': self.time_elapsed.total_seconds(),
+            'state': self.state_value,
         }
 
     @classmethod
-    def fields_discovery(cls, host, name, state_topic) -> dict[str, Any]:
+    def fields_discovery(cls, host, name, state_topic, root) -> dict[str, Any]:
         device_id = f'duplicacy_{host}_{name}'
-        return [
-            {
+        return {
+            f'{root}/{"binary_sensor" if field.type is bool else "sensor"}/{device_id}/{field.name}/config': {
                 'device': {
                     'identifiers': [device_id],
                     'name': f'{host}/{name} Backup'
@@ -108,8 +178,8 @@ class CompletionState:
                 'object_id': f'{device_id}_{field.name}',
                 'state_topic': state_topic,
                 'unique_id': f'{device_id}_{field.name}',
-                'value_template': f'{{{{ value_json.{field.name}}}}}',
+                'value_template': f'{{{{ value_json.{field.name} }}}}',
                 **field.metadata
             }
             for field in fields(cls)
-        ]
+        }

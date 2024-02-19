@@ -34,11 +34,11 @@ class UpdateHandler:
         for topic, payload in progress_fields_discovery.items():
             self.client.publish(topic, json.dumps(payload), 1, True)
 
-        #completion_fields_discovery = CompletionState.fields_discovery(
-        #    self.backup_host, self.backup_name, self.topic, discovery_root
-        #)
-        #for topic, payload in completion_fields_discovery.items():
-        #    self.client.publish(topic, json.dumps(payload), 1, True)
+        completion_fields_discovery = CompletionState.fields_discovery(
+            self.backup_host, self.backup_name, self.topic, discovery_root
+        )
+        for topic, payload in completion_fields_discovery.items():
+            self.client.publish(topic, json.dumps(payload), 1, True)
 
     def send_completion(self, state):
         self.client.publish(self.topic, json.dumps(state.as_dict()), 1, True)

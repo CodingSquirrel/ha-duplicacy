@@ -51,6 +51,9 @@ def run(args):
             logger.info(f'Stopping containers: {args.containers}')
             docker_command(args.containers, 'stop', args.dry_run)
             run_backup(log_parser, args.backup_dir, args.dry_run)
+        except Exception as e:
+            logging.exception('Uncaught exception raised during main execution')
+            raise e from None
         finally:
             logger.info(f'Restarting containers: {args.containers}')
             docker_command(args.containers, 'start', args.dry_run)

@@ -1,0 +1,109 @@
+type: vertical-stack
+title: server/data
+cards:
+  - type: entities
+    entities:
+      - entity: sensor.duplicacy_server_data_state
+        type: custom:multiple-entity-row
+        name: State
+        styles:
+          width: 80px
+          text-align: right
+        entities:
+          - entity: sensor.duplicacy_server_data_revision
+            name: Revision
+            styles:
+              text-align: right
+      - entity: sensor.duplicacy_server_data_time_finished
+        name: Time Finished
+        format: datetime
+      - entity: sensor.duplicacy_server_data_time_elapsed
+        name: Time Elapsed
+      - type: divider
+      - entity: sensor.duplicacy_server_data_files
+        type: custom:multiple-entity-row
+        name: Files
+        show_state: false
+        entities:
+          - entity: sensor.duplicacy_server_data_files
+            name: Files
+            styles:
+              text-align: right
+          - entity: sensor.duplicacy_server_data_files_size
+            name: Size
+            format: precision2
+            styles:
+              width: 80px
+              text-align: right
+      - entity: sensor.duplicacy_server_data_new_files
+        type: custom:multiple-entity-row
+        name: New Files
+        show_state: false
+        entities:
+          - entity: sensor.duplicacy_server_data_new_files
+            name: Files
+            styles:
+              text-align: right
+          - entity: sensor.duplicacy_server_data_new_files_size
+            name: Size
+            format: precision2
+            styles:
+              width: 80px
+              text-align: right
+      - entity: sensor.duplicacy_server_data_chunks
+        type: custom:multiple-entity-row
+        name: Chunks
+        show_state: false
+        entities:
+          - entity: sensor.duplicacy_server_data_chunks
+            name: Files
+            styles:
+              text-align: right
+          - entity: sensor.duplicacy_server_data_chunks_size
+            name: Size
+            format: precision2
+            styles:
+              width: 80px
+              text-align: right
+      - entity: sensor.duplicacy_server_data_new_chunks
+        type: custom:multiple-entity-row
+        name: New Chunks
+        show_state: false
+        entities:
+          - entity: sensor.duplicacy_server_data_new_chunks
+            name: Files
+            styles:
+              text-align: right
+          - entity: sensor.duplicacy_server_data_new_chunks_size
+            name: Size
+            format: precision2
+            styles:
+              width: 80px
+              text-align: right
+      - type: divider
+      - entity: sensor.duplicacy_server_data_warnings
+        name: Warnings
+      - entity: sensor.duplicacy_server_data_errors
+        name: Errors
+    header:
+      type: graph
+      entity: sensor.duplicacy_server_data_chunks_size
+      hours_to_show: 168
+  - type: conditional
+    conditions:
+      - condition: state
+        entity: binary_sensor.duplicacy_server_data_progress_running
+        state: 'on'
+    card:
+      type: entities
+      entities:
+        - entity: binary_sensor.duplicacy_server_data_progress_running
+          name: Running
+        - entity: sensor.duplicacy_server_data_progress_percent
+          name: Percent
+        - entity: sensor.duplicacy_server_data_progress_time_elapsed
+          name: Time Elapsed
+        - entity: sensor.duplicacy_server_data_progress_time_remaining
+          name: Time Remaining
+        - entity: sensor.duplicacy_server_data_progress_upload_speed
+          name: Upload Speed

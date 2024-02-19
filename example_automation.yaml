@@ -1,0 +1,57 @@
+alias: Backup Issue
+description: ""
+trigger:
+  - platform: state
+    entity_id:
+      - sensor.duplicacy_server_data_state
+      - sensor.duplicacy_server_storage_state
+      - sensor.duplicacy_server_storage_temp_state
+      - sensor.duplicacy_server_nextcloud_state
+    to:
+      - error
+      - warning
+    id: unsuccessful
+  - platform: state
+    entity_id:
+      - binary_sensor.server_data_backup_outdated
+      - binary_sensor.server_storage_backup_outdated
+      - binary_sensor.server_storage_temp_backup_outdated
+      - binary_sensor.server_nextcloud_backup_outdated
+    to: "on"
+    id: outdated
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - unsuccessful
+        sequence:
+          - service: notify.all_devices
+            data:
+              title: Unsuccessful backup
+              message: >-
+                {{ state_attr(trigger.entity_id, 'friendly_name') }} finished
+                with state {{ states(trigger.entity_id) }}
+              data:
+                notification_icon: mdi:cloud-alert
+                priority: high
+                channel: Info
+                ttl: 0
+      - conditions:
+          - condition: trigger
+            id:
+              - outdated
+        sequence:
+          - service: notify.all_devices
+            data:
+              title: Outdated Backup
+              message: >-
+                {{ state_attr(trigger.entity_id, 'friendly_name') }} has been
+                triggered
+              data:
+                notification_icon: mdi:cloud-alert
+                priority: high
+                channel: Info
+                ttl: 0
+mode: single

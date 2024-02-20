@@ -6,11 +6,7 @@ This is a project for parsing duplicacy backup logs for the purpose of publishin
 
 This tool provides a commandline script that's intended to be used from either a terminal or as a scheduled task. It will stop any specified containers, call duplicacy backup, and publish the progress and completion stats to MQTT over two topics `duplicacy/<computer_name>/<backup_name>` and `duplicacy/<computer_name>/<backup_name>/progress`. It will also publish home assistant autodiscovery topics to create two devices for each backup; a device for completion state and a device for in-progress backup state.
 
-<p float="left" align="center">
-    <img align="top" alt="Backup Completion" src="img/duplicacy_completion.png">
-    &nbsp; &nbsp; &nbsp; &nbsp;
-    <img align="top" alt="Backup Progress" src="img/duplicacy_progress.png">
-</p>
+![Backup Completion](img/duplicacy_completion.png) ![Backup Progress](img/duplicacy_progress.png)
 
 The script will also make use of a lockfile in the backup folder to prevent multiple instances of the script running on the same backup at the same time, but will not prevent multiple different backups from running at once. This is useful in case a backup runs over the next scheduled backup time.
 

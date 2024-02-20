@@ -82,12 +82,15 @@ def parse_args():
         'log_dir': args.backup_dir,
         'containers': [],
         'discovery_root': 'homeassistant',
+        'mqtt_hostname': None,
         'mqtt_port': 1883,
         'mqtt_username': None,
         'mqtt_password': None,
     }
-    with open(args.configfile, 'r') as f:
-        config = json.load(f)
+    config = {}
+    if Path(args.configfile).is_file():
+        with open(args.configfile, 'r') as f:
+            config = json.load(f)
     args_dict = {k: v for k, v in vars(args).items() if v is not None}
     
     return argparse.Namespace(**{**defaults, **config, **args_dict})

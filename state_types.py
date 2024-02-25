@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field, fields, asdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+import json
 from typing import Literal, Any
 
 @dataclass
@@ -69,12 +70,12 @@ class CompletionState:
         'name': 'Revision',
         'state_class': 'measurement',
     })
-    time_started: datetime = field(default=datetime.fromtimestamp(0), metadata={
+    time_started: datetime = field(default=datetime.fromtimestamp(0, timezone.utc), metadata={
         'device_class': 'timestamp',
         'name': 'Time Started',
         'state_class': 'measurement',
     })
-    time_finished: datetime = field(default=datetime.fromtimestamp(0), metadata={
+    time_finished: datetime = field(default=datetime.fromtimestamp(0, timezone.utc), metadata={
         'device_class': 'timestamp',
         'name': 'Time Finished',
         'state_class': 'measurement',
@@ -162,6 +163,8 @@ class CompletionState:
             'time_started': self.time_started.isoformat(),
             'time_finished': self.time_finished.isoformat(),
             'time_elapsed': self.time_elapsed.total_seconds(),
+            'errors': json.dumps(self.errors, indent=2),
+            'warnings': json.dumps(self.warnings, indent=2),
             'state': self.state_value,
         }
 

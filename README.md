@@ -30,14 +30,16 @@ It's recommended to create a configuration file to contain global settings inste
 
 Minimum argument when calling `duplicacy_runner.py` is `--backup-dir`, although `--mqtt-hostname` must be set somewhere as well.
 
-`--backup-dir` is where the duplicacy repository is set up, where you would normally call `duplicacy backup` from.
-`--backup-name` is the name used when publishing stats for the backup. If not provided it will be pulled from the duplicacy preferences file.
-`--log-dir` is where logfiles will be created in the format `<backup_name>_backup_YYYY-MM-DD-HH-MM.log`
-`--containers` is a list of containers that will be stopped before backup and restarted before execution is complete. Specified as follows, `--containers container1 container2`
-`--discovery-root` is the root MQTT path Home Assistant uses for MQTT discovery. Default value matches the Home Assistant default of `homeassistant`.
-`--mqtt-hostname`, `--mqtt-port`, `--mqtt-username`, `--mqtt-password` are the connection details for your MQTT broker
-`--configfile` is the location of your optional configfile. Defaults to `~/.config/duplicacy_runner/config.json`
-`--dry-run` will run the backup in dry-run mode, and will skip starting/stopping any docker containers. All other functionality, such as MQTT publishing, will run as normal
+`--backup-dir` is where the duplicacy repository is set up, where you would normally call `duplicacy backup` from  
+`--backup-name` is the name used when publishing stats for the backup. If not provided it will be pulled from the duplicacy preferences file  
+`--log-dir` is where logfiles will be created in the format `<backup_name>_backup_YYYY-MM-DD-HH-MM.log`  
+`--containers` is a list of containers that will be stopped before backup and restarted before execution is complete. Specified as follows, `--containers container1 container2`  
+`--discovery-root` is the root MQTT path Home Assistant uses for MQTT discovery. Default value matches the Home Assistant default of `homeassistant`  
+`--mqtt-hostname`, `--mqtt-port`, `--mqtt-username`, `--mqtt-password` are the connection details for your MQTT broker  
+`--configfile` is the location of your optional configfile. Defaults to `~/.config/duplicacy_runner/config.json`  
+`--dry-run` will run the backup in dry-run mode, and will skip starting/stopping any docker containers. All other functionality, such as MQTT publishing, will run as normal  
+
+Additional arguments for `duplicacy backup` can be specified following a `--` delimiter. E.g., `duplicacy_runner -d /some/path -- -vss`. In that case, `-vss` will be appended to the arguments sent to the `duplicacy backup` command.
 
 ## Adding to Home Assistant
 

@@ -20,13 +20,15 @@ from utils import (
 logger = logging.getLogger(__name__)
 direct_logger = logging.getLogger('DIRECT_LOGGER')
 
-def run_backup(log_parser, backup_dir, dry_run):
+def run_backup(log_parser, backup_dir, dry_run, backup_args):
     cmd = ['duplicacy', '-log', 'backup', '-stats']
     if dry_run:
         cmd.append('-dry-run')
+    if backup_args:
+        cmd.extend(backup_args)
     logger.info(f'Starting Backup using cmd: {cmd}')
     
-    proc = sub.Popen(cmd, cwd=backup_dir, stdout=sub.PIPE, stderr=sub.STDOUT, text=True)
+    proc = sub.Popen(cmd, cwd=backup_dir, stdout=sub.PIPE, stderr=sub.STDOUT, encoding='utf-8', errors='backslashreplace', text=True)
 
     while True:
         line = proc.stdout.readline().rstrip()
@@ -44,13 +46,13 @@ def run_backup(log_parser, backup_dir, dry_run):
     logger.info(f'Backup finished with return code {ret}')
 
 def run(args):
-    with file_lock(args.backup_dir):
+    with file_lock(Path(args.backup_dir)/'.duplicacy'):
         log_parser = LogParser(UpdateHandler(args.mqtt_hostname, args.mqtt_port, args.mqtt_username, args.mqtt_password, args.discovery_root, args.backup_name))
 
         try:
             logger.info(f'Stopping containers: {args.containers}')
             docker_command(args.containers, 'stop', args.dry_run)
-            run_backup(log_parser, args.backup_dir, args.dry_run)
+            run_backup(log_parser, args.backup_dir, args.dry_run, args.backup_args)
         except Exception as e:
             logging.exception('Uncaught exception raised during main execution')
             raise e from None
@@ -74,12 +76,13 @@ def parse_args():
     parser.add_argument('--mqtt-password', help='Password to login to MQTT broker')
     parser.add_argument('--configfile', default=str(Path.home()/'.config'/'duplicacy_runner'/'config.json'), help='Configfile location')
     parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('backup_args', nargs='*')
 
     args = parser.parse_args()
 
     defaults = {
         'backup_name': get_backup_name(args.backup_dir),
-        'log_dir': args.backup_dir,
+        'log_dir': str(Path(args.backup_dir)/'.duplicacy'/'logs'),
         'containers': [],
         'discovery_root': 'homeassistant',
         'mqtt_hostname': None,

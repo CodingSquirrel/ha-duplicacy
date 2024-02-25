@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import re
 
 from state_types import ProgressState, CompletionState
@@ -15,7 +15,7 @@ class LogParser:
     def __init__(self, update_handler):
         self.update_handler = update_handler
         self.completion_state = CompletionState()
-        self.last_publish_progress = datetime.fromtimestamp(0).astimezone()
+        self.last_publish_progress = datetime.fromtimestamp(0, timezone.utc).astimezone()
 
     def parse_line(self, line):
         match = self.line_re.match(line)

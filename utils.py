@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
     
 @contextmanager
 def file_lock(lock_dir):
-    path = Path(lock_dir)/'LOCK'
+    path = lock_dir/'LOCK'
     try:
         open(path, 'x').close()
     except FileExistsError:

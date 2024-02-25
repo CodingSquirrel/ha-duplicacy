@@ -5,12 +5,12 @@ from state_types import ProgressState, CompletionState
 from utils import convert_size
 
 class LogParser:
-    line_re = re.compile('(?P<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) (?P<level>\S+) (?P<type>\S+) (?P<message>.*)')
-    revision_re = re.compile('Backup for .+ at revision (?P<revision>\d+) completed')
-    files_re = re.compile('Files: (?P<files>\d+[\d.,]*\d*) total, (?P<size>\d+[\d.,]*\d*)(?P<size_unit>[TGMK]?) bytes; (?P<new_files>\d+[\d.,]*\d*) new, (?P<new_size>\d+[\d.,]*\d*)(?P<new_size_unit>[TGMK]?) bytes')
-    chunks_re = re.compile('All chunks: (?P<chunks>\d+[\d.,]*\d*) total, (?P<size>\d+[\d.,]*\d*)(?P<size_unit>[TGMK]?) bytes; (?P<new_chunks>\d+[\d.,]*\d*) new, (?P<new_size>\d+[\d.,]*\d*)(?P<new_size_unit>[TGMK]?) bytes')
-    time_re = re.compile('Total running time: (?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})')
-    progress_re = re.compile('(?:Uploaded|Skipped) chunk \d+ size \d+, (?P<speed>\d+[\d.,]*\d*)(?P<unit>[TGMK]?)B/s (?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2}) (?P<percent>\d+[\d.,]*\d*)%')
+    line_re = re.compile(r'(?P<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) (?P<level>\S+) (?P<type>\S+) (?P<message>.*)')
+    revision_re = re.compile(r'Backup for .+ at revision (?P<revision>\d+) completed')
+    files_re = re.compile(r'Files: (?P<files>\d+[\d.,]*\d*) total, (?P<size>\d+[\d.,]*\d*)(?P<size_unit>[TGMK]?) bytes; (?P<new_files>\d+[\d.,]*\d*) new, (?P<new_size>\d+[\d.,]*\d*)(?P<new_size_unit>[TGMK]?) bytes')
+    chunks_re = re.compile(r'All chunks: (?P<chunks>\d+[\d.,]*\d*) total, (?P<size>\d+[\d.,]*\d*)(?P<size_unit>[TGMK]?) bytes; (?P<new_chunks>\d+[\d.,]*\d*) new, (?P<new_size>\d+[\d.,]*\d*)(?P<new_size_unit>[TGMK]?) bytes')
+    time_re = re.compile(r'Total running time: (?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})')
+    progress_re = re.compile(r'(?:Uploaded|Skipped) chunk \d+ size \d+, (?P<speed>\d+[\d.,]*\d*)(?P<unit>[TGMK]?)B/s (?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2}) (?P<percent>\d+[\d.,]*\d*)%')
 
     def __init__(self, update_handler):
         self.update_handler = update_handler

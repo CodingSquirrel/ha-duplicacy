@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field, fields, asdict
+from dataclasses import dataclass, field, fields, asdict, InitVar
 from datetime import datetime, timedelta, timezone
 import json
 from typing import Literal, Any
@@ -73,12 +73,10 @@ class CompletionState:
     time_started: datetime = field(default=datetime.fromtimestamp(0, timezone.utc), metadata={
         'device_class': 'timestamp',
         'name': 'Time Started',
-        'state_class': 'measurement',
     })
     time_finished: datetime = field(default=datetime.fromtimestamp(0, timezone.utc), metadata={
         'device_class': 'timestamp',
         'name': 'Time Finished',
-        'state_class': 'measurement',
     })
     time_elapsed: timedelta = field(default=timedelta(), metadata={
         'device_class': 'duration',
@@ -134,20 +132,16 @@ class CompletionState:
         'state_class': 'measurement',
         'unit_of_measurement': 'GiB',
     })
-    errors: list[str] = field(default_factory=list, metadata={
-        'icon': 'mdi:close-circle',
-        'name': 'Errors',
-    })
-    warnings: list[str] = field(default_factory=list, metadata={
-        'icon': 'mdi:alert',
-        'name': 'Warnings',
-    })
     state: str = field(default='', metadata={
         'icon': 'mdi:cloud-check-variant',
         'name': 'State',
         'device_class': 'enum',
-        'state_class': 'measurement',
+        'json_attributes_template': '{ "warnings": {{ value_json.warnings }}, "errors": {{ value_json.errors }} }'
     })
+
+    def __post_init__(self):
+        self.warnings = []
+        self.errors = []
 
     @property
     def state_value(self) -> str:
@@ -182,6 +176,7 @@ class CompletionState:
                 'state_topic': state_topic,
                 'unique_id': f'{device_id}_{field.name}',
                 'value_template': f'{{{{ value_json.{field.name} }}}}',
+                **({'json_attributes_topic': state_topic} if 'json_attributes_template' in field.metadata else {}),
                 **field.metadata
             }
             for field in fields(cls)

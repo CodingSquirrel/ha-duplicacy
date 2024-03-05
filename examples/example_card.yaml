@@ -80,11 +80,6 @@ cards:
             styles:
               width: 80px
               text-align: right
-      - type: divider
-      - entity: sensor.duplicacy_server_data_warnings
-        name: Warnings
-      - entity: sensor.duplicacy_server_data_errors
-        name: Errors
     header:
       type: graph
       entity: sensor.duplicacy_server_data_chunks_size

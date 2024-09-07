@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess as sub
 import time
 
-from log_parser import LogParser
+from log_parser import LogParser, LogParseException
 from update_handler import UpdateHandler
 from utils import (
     file_lock,
@@ -40,8 +40,11 @@ def run_backup(log_parser, backup_dir, dry_run, backup_args):
             time.sleep(0.1)
             continue
 
-        log_parser.parse_line(line)
         direct_logger.info(line)
+        try:
+            log_parser.parse_line(line)
+        except LogParseException as e:
+            logger.error(e)
 
     logger.info(f'Backup finished with return code {ret}')
 

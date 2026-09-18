@@ -10,10 +10,10 @@ class LogParseException(Exception):
 class LogParser:
     line_re = re.compile(r'(?P<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) (?P<level>\S+) (?P<type>\S+) (?P<message>.*)')
     revision_re = re.compile(r'Backup for .+ at revision (?P<revision>\d+) completed')
-    files_re = re.compile(r'Files\: (?P<files>\d+[\d.,]*\d*) total, (?P<size>\d+[\d.,]*\d*)(?P<size_unit>[TGMK]?) bytes; (?P<new_files>\d+[\d.,]*\d*) new, (?P<new_size>\d+[\d.,]*\d*)(?P<new_size_unit>[TGMK]?) bytes')
+    files_re = re.compile(r'Files\: (?P<files>\d+[\d.,]*\d*) total, (?P<size>\d+[\d.,]*\d*)(?P<size_unit>[TGMK]?) bytes; (?P<new_files>\d+[\d.,]*\d*) new, (?P<new_size>[-]?\d+[\d.,]*\d*)(?P<new_size_unit>[TGMK]?) bytes')
     chunks_re = re.compile(r'All chunks\: (?P<chunks>\d+[\d.,]*\d*) total, (?P<size>\d+[\d.,]*\d*)(?P<size_unit>[TGMK]?) bytes; (?P<new_chunks>\d+[\d.,]*\d*) new, (?P<new_size>\d+[\d.,]*\d*)(?P<new_size_unit>[TGMK]?) bytes')
     time_re = re.compile(r'Total running time\: (?:(?P<days>\d+) days? )?(?P<hours>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})')
-    progress_re = re.compile(r'(?:Uploaded|Skipped) chunk \d+ size \d+, (?P<speed>\d+[\d.,]*\d*)(?P<unit>[TGMK]?)B/s (?:(?P<days>\d+) days? )?(?P<hours>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2}) (?P<percent>\d+[\d.,]*\d*)%')
+    progress_re = re.compile(r'(?:Uploaded|Skipped) chunk \d+ size \d+, (?P<speed>\d+[\d.,]*\d*)(?P<unit>[TGMK]?)B/s (?:(?:(?P<days>\d+) days? )?(?P<hours>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})|n/a) (?P<percent>\d+[\d.,]*\d*)%')
 
     def __init__(self, update_handler):
         self.update_handler = update_handler
@@ -101,7 +101,7 @@ class LogParser:
 
         progress = ProgressState(
             match['percent'],
-            timedelta(days=int(match['days'] or 0), hours=int(match['hours']), minutes=int(match['min']), seconds=int(match['sec'])),
+            timedelta(days=int(match['days'] or 0), hours=int(match['hours'] or 0), minutes=int(match['min'] or 0), seconds=int(match['sec'] or 0)),
             ts - self.completion_state.time_started,
             convert_size(match['speed'], match['unit'], 'M')
         )

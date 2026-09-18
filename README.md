@@ -12,11 +12,26 @@ The script will also make use of a lockfile in the backup folder to prevent mult
 
 All output will be logged to the log directory as a dated file. The logs do not clean up after themselves currently.
 
-## Setup
+## Install
 
-There is currently no installer or package, so the repo will have to be cloned to use it. A python environment is necessary. It was developed and tested using Python 3.9 so it may not be compatible with other versions, though likely 3.6 and above should be fine. Install the dependencies using `pip install -r requirements.txt`. From there either call the `duplicacy_runner.py` file directly or create a symlink in a bin directory on your path. 
+Clone the repo, then inside the cloned repo create a venv and source it:
 
-It's recommended to create a configuration file to contain global settings instead of specifying them as commandline arguments, such as the MQTT connection information. By default it looks for it at `~/.config/duplicacy_runner/config.json`. Fields must match the commandline arguments, with dashes `'-'` replaced by underscore `'_'`. All commandline arguments, save `--backup-dir`, `--configfile`, and `--dry-run` can be specified here. Example:
+```bash
+python -m venv .venv
+source .venv./bin/activate
+```
+
+Then install the package:
+```bash
+pip install -e .
+```
+
+This will install the dependencies and register a command within the virtual environment called `ha-duplicacy`. After activating the venv it can be referenced globally, or without activating it can be used directly from `/path/to/.venv/bin/ha-duplicacy`
+
+## Configuration
+
+It's recommended to create a configuration file to contain global settings instead of specifying them as commandline arguments, such as the MQTT connection information. By default it looks for it at `~/.config/ha-duplicacy/config.json`. Fields must match the commandline arguments, with dashes `'-'` replaced by underscore `'_'`. All commandline arguments, save `--backup-dir`, `--configfile`, and `--dry-run` can be specified here. Example:
+
 ```JSON
 {
     "mqtt_hostname": "127.0.0.1",
@@ -28,7 +43,7 @@ It's recommended to create a configuration file to contain global settings inste
 
 ## Usage
 
-Minimum argument when calling `duplicacy_runner.py` is `--backup-dir`, although `--mqtt-hostname` must be set somewhere as well.
+Minimum argument when calling `ha-duplicacy` is `--backup-dir`, although `--mqtt-hostname` must be set somewhere as well.
 
 `--backup-dir` is where the duplicacy repository is set up, where you would normally call `duplicacy backup` from  
 `--backup-name` is the name used when publishing stats for the backup. If not provided it will be pulled from the duplicacy preferences file  
@@ -36,10 +51,10 @@ Minimum argument when calling `duplicacy_runner.py` is `--backup-dir`, although 
 `--containers` is a list of containers that will be stopped before backup and restarted before execution is complete. Specified as follows, `--containers container1 container2`  
 `--discovery-root` is the root MQTT path Home Assistant uses for MQTT discovery. Default value matches the Home Assistant default of `homeassistant`  
 `--mqtt-hostname`, `--mqtt-port`, `--mqtt-username`, `--mqtt-password` are the connection details for your MQTT broker  
-`--configfile` is the location of your optional configfile. Defaults to `~/.config/duplicacy_runner/config.json`  
-`--dry-run` will run the backup in dry-run mode, and will skip starting/stopping any docker containers. All other functionality, such as MQTT publishing, will run as normal  
+`--configfile` is the location of your optional configfile. Defaults to `~/.config/ha-duplicacy/config.json`  
+`--dry-run` will run the backup in dry-run mode, and will skip starting/stopping any docker containers. All other functionality, such as MQTT publishing, will run as normal
 
-Additional arguments for `duplicacy backup` can be specified following a `--` delimiter. E.g., `duplicacy_runner -d /some/path -- -vss`. In that case, `-vss` will be appended to the arguments sent to the `duplicacy backup` command.
+Additional arguments for `duplicacy backup` can be specified following a `--` delimiter. E.g., `ha-duplicacy -d /some/path -- -vss`. In that case, `-vss` will be appended to the arguments sent to the `duplicacy backup` command.
 
 ## Adding to Home Assistant
 

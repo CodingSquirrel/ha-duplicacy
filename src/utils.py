@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from datetime import datetime
+from filelock import FileLock, Timeout
 import json
 import logging
 from pathlib import Path
@@ -12,14 +13,11 @@ logger = logging.getLogger(__name__)
 def file_lock(lock_dir):
     path = lock_dir/'LOCK'
     try:
-        open(path, 'x').close()
-    except FileExistsError:
+        with FileLock(path, blocking=False):
+            yield
+    except Timeout:
         logger.info('Backup already running, quitting')
         sys.exit(0)
-    try:
-        yield
-    finally:
-        path.unlink()
 
 def convert_size(size, from_unit, to_unit):
     UNITS = {'': 1, 'K': 2 ** 10, 'M': 2 ** 20, 'G': 2 ** 30, 'T': 2 ** 40}

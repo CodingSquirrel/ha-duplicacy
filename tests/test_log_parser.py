@@ -98,6 +98,10 @@ def test_parse_line_end_error():
                 CompletionState(files=99999, files_size=6424, new_files=1, new_files_size=6418)
             ),
             (
+                "2024-09-06 19:22:57.534 INFO BACKUP_STATS Files: 19153 total, 5,633G bytes; 12 new, -12G bytes",
+                CompletionState(files=19153, files_size=5633, new_files=12, new_files_size=-12)
+            ),
+            (
                 "2024-09-06 19:22:57.534 INFO BACKUP_STATS All chunks: 1340055 total, 64,24 bytes; 1338843 new, 6,418 bytes, 6385 bytes uploaded",
                 CompletionState(chunks=1340055, chunks_size=pytest.approx(5.982816219329834e-06), new_chunks=1338843, new_chunks_size=pytest.approx(5.977228283882141e-06))
             ),
@@ -179,6 +183,10 @@ def test_parse_line_stats_error(line):
             (
                 "2024-09-06 19:22:57.534 INFO UPLOAD_PROGRESS Skipped chunk 0 size 9999, 4.69GB/s 2 days 00:00:00 100.0%",
                 ProgressState('100.0', timedelta(days=2), timedelta(), upload_speed=pytest.approx(4802.56))
+            ),
+            (
+                "2024-09-06 19:22:57.534 INFO UPLOAD_PROGRESS Skipped chunk 0 size 9999, 4.69GB/s n/a 101.6%",
+                ProgressState('101.6', timedelta(), timedelta(), upload_speed=pytest.approx(4802.56))
             ),
         ]
 )

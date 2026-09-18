@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import argparse
 import json
 import logging
@@ -65,8 +63,8 @@ def run(args):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        prog='DuplicacyRunner',
-        description='Script to run duplicacy commands and output status/stats to MQTT'
+        prog='HA-Duplicacy',
+        description='Script to run duplicacy commands and output status/stats to MQTT, for ingestion to Home Assistant'
     )
     parser.add_argument('-d', '--backup-dir', required=True, help='Path to the backup directory')
     parser.add_argument('-n', '--backup-name', help='Name of backup. Optional, will use id from duplicacy preferences file if not provided')
@@ -77,7 +75,7 @@ def parse_args():
     parser.add_argument('--mqtt-port', help='Port of MQTT broker')
     parser.add_argument('--mqtt-username', help='Username to login to MQTT broker')
     parser.add_argument('--mqtt-password', help='Password to login to MQTT broker')
-    parser.add_argument('--configfile', default=str(Path.home()/'.config'/'duplicacy_runner'/'config.json'), help='Configfile location')
+    parser.add_argument('--configfile', default=str(Path.home()/'.config'/'ha-duplicacy'/'config.json'), help='Configfile location')
     parser.add_argument('--dry-run', action='store_true')
     parser.add_argument('backup_args', nargs='*')
 

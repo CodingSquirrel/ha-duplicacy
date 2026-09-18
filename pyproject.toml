@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ha-duplicacy"
+version = "0.2.0"
+description = "A wrapper for duplicacy backups that will send status updates over MQTT, for use in Home Assistant"
+requires-python = ">=3.10"
+dependencies = [
+    "paho-mqtt>=2.1.0",
+    "filelock>=4.0.0"
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[project.scripts]
+ha-duplicacy = "duplicacy_runner:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

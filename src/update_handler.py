@@ -4,7 +4,8 @@ import logging
 import platform
 from typing import Optional
 
-import paho.mqtt.client as mqtt
+import paho.mqtt.client as mqtt_client
+from paho.mqtt.enums import CallbackAPIVersion
 
 from state_types import ProgressState, CompletionState
 
@@ -15,7 +16,7 @@ class UpdateHandler:
         def on_connect(client, userdata, flags, reason_code, properties):
             logger.info('Connected to MQTT host %s with result code %s', mqtt_hostname, reason_code)
 
-        self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+        self.client = mqtt_client.Client(CallbackAPIVersion.VERSION2)
         self.client.on_connect = on_connect
         if mqtt_username:
             self.client.username_pw_set(mqtt_username, mqtt_password)

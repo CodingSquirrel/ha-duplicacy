@@ -18,12 +18,24 @@ Clone the repo, then inside the cloned repo create a venv and source it:
 
 ```bash
 python -m venv .venv
-source .venv./bin/activate
+source .venv/bin/activate  # Or .venv\Scripts\activate on Windows
 ```
 
 Then install the package:
 ```bash
 pip install -e .
+```
+
+If you have trouble activating on Windows or want to skip the activation step you can simply run the following to install:
+
+##### Linux
+```bash
+./.venv/bin/pip install -e .
+```
+
+##### Windows
+```powershell
+.\.venv\Scripts\pip.exe install -e .
 ```
 
 This will install the dependencies and register a command within the virtual environment called `ha-duplicacy`. After activating the venv it can be referenced globally, or without activating it can be used directly from `/path/to/.venv/bin/ha-duplicacy`
